@@ -16,5 +16,8 @@ export const CurrentlyReading = ({
   currentSentenceIdx: number;
   sentences: string[];
 }) => {
-  return <div data-testid="currently-reading"></div>;
+  console.log('sentences[currentSentenceIdx]', sentences[currentSentenceIdx]);
+  return <div data-testid="currently-reading">
+      {sentences[currentSentenceIdx]}
+  </div>;
 };

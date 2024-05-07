@@ -11,11 +11,26 @@ export const Controls = ({
   play,
   pause,
   loadNewContent,
+  state,
 }: {
   play: () => void;
   pause: () => void;
   loadNewContent: () => void;
   state: PlayingState;
 }) => {
-  return <div></div>;
+  const handleStatus = () =>{
+    switch(state){
+      case 'initialized': case 'paused':
+        return <button type="button" onClick={play}>Play</button>;
+      case 'playing':
+        return <button type="button" onClick={pause}>Pause</button>
+      default:
+        return <button type="button">Play</button>
+    }
+  }
+  return <div>
+    {handleStatus()}
+
+    <button type="button">Load new content</button>
+  </div>;
 };
