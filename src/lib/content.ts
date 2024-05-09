@@ -51,7 +51,6 @@ const fetchContent = async (url = API_URL): Promise<string> => {
  * Avoid using DOMParser for implementing this function.
  */
 const parseContentIntoSentences = (content: string) => {
-    console.log('parseContentIntoSentences', content);
     const parser = new DOMParser();
 
     const xmlString = content;
@@ -61,16 +60,19 @@ const parseContentIntoSentences = (content: string) => {
     if (errorNode) {
         throw Error('This is not valid ssml')
     } else {
-        console.log('doc1', doc1.body.querySelector('speak'));
-        const element = doc1.body.querySelector('speak');
-    
-        if (element) {
+        const elementFather = doc1.body.querySelector('speak');
+        if (!elementFather) {
+            throw Error('throws an error when ssml is invalid i.e does not start with <speak>')
+        }
+        const elementChildren = elementFather?.querySelectorAll('s');
+        if (elementChildren) {
             const target = [];
-            for (const child of element.children) {
-                target.push(child.textContent || '');
-    
+            for (const child of elementChildren) {
+                if (child.textContent) {
+                    target.push(child.textContent);
+                }
+
             }
-            console.log('target', target);
             return target;
         } else {
             return []

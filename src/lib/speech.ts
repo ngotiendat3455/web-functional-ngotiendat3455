@@ -41,13 +41,13 @@ const createSpeechEngine = (options: SpeechEngineOptions) => {
     utterance.rate = state.config.rate;
     utterance.volume = state.config.volume;
     utterance.voice = state.config.voice;
+
     // set up listeners
     utterance.onboundary = (e) => options.onBoundary(e);
     utterance.onend = (e) => {
       options.onStateUpdate("ended");
       options.onEnd(e);
     };
-
     // set it up as active utterance
     state.utterance = utterance;
   };

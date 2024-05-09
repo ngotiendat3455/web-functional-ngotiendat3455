@@ -10,43 +10,55 @@ import { PlayingState, SpeechEngine, createSpeechEngine } from './speech';
   This hook should return react friendly controls for playing, and pausing audio as well as provide information about
   the currently read word and sentence
 */
+
 const useSpeech = (sentences: Array<string>) => {
   const [currentSentenceIdx, setCurrentSentenceIdx] = useState(0);
   const [currentWordRange, setCurrentWordRange] = useState([0, 0]);
-  //const [speechEngine, setSpeechEngine] = useState<SpeechEngine>();
   const [playbackState, setPlaybackState] = useState<PlayingState>("initialized");
-  const engine = createSpeechEngine({
-    onStateUpdate: setPlaybackState,
-    onEnd(e) {
-        
-    },
-    onBoundary(e) {
-        
-    },
-  })
+  const [speechEngine, setSpeechEngine] = useState<SpeechEngine>();
   
   const play = () => {
-    engine.load(sentences[currentSentenceIdx])
+    speechEngine?.play();
   };
-  const pause = () => {};
+  const pause = () => { 
+    speechEngine?.pause();
+  };
 
-  // useEffect (() => {
-  //   const {} = createSpeechEngine({
-  //     onStateUpdate: setPlaybackState,
-  //     onEnd(e) {
-          
-  //     },
-  //     onBoundary(e) {
-          
-  //     },
-  //   })
-  // }, [])
+  useEffect(() => {
+    const loadSpeedEngine = () => {
+      if (sentences[currentSentenceIdx]) {
+        const engine = createSpeechEngine({
+          onBoundary(e) {
+            const {charIndex, charLength} = e;
+            console.log('onBoundary event', e);
+            setCurrentWordRange([charIndex, charIndex + charLength])
+          },
+          onEnd(e) {
+            console.log('onEnd event', e);
+            setCurrentSentenceIdx((index) => {
+              const nextIndex = index + 1;
+              if (nextIndex >= sentences.length) return 0;
+              return nextIndex;
+            })
+            setCurrentWordRange([0, 0])
+          },
+          onStateUpdate: setPlaybackState,
+        })
+        engine.load(sentences[currentSentenceIdx])
+        setSpeechEngine(engine);
+        setPlaybackState('paused');
+      }
+    }
+    loadSpeedEngine();
+  }, [sentences, currentSentenceIdx]);
   return {
     currentSentenceIdx,
     currentWordRange,
     playbackState,
     play,
     pause,
+    speechEngine,
+    setCurrentSentenceIdx,
   };
 };
 

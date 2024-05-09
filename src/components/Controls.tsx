@@ -25,12 +25,12 @@ export const Controls = ({
       case 'playing':
         return <button type="button" onClick={pause}>Pause</button>
       default:
-        return <button type="button">Play</button>
+        return null
     }
   }
   return <div>
     {handleStatus()}
 
-    <button type="button">Load new content</button>
+    <button type="button" onClick={loadNewContent}>Load new content</button>
   </div>;
 };

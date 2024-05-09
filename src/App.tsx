@@ -8,27 +8,31 @@ import { fetchContent, parseContentIntoSentences } from './lib/content';
 
 function App() {
   const [sentences, setSentences] = useState<Array<string>>([]);
-  const { currentWord, currentSentence, pause, play, playbackState, currentSentenceIdx } = useSpeech(sentences);
+  const { pause, play, playbackState, currentSentenceIdx, currentWordRange, setCurrentSentenceIdx } = useSpeech(sentences);
 
-
-  useEffect(() => {
+  const handleFetchData = () => {
     fetchContent().then((response) => {
       try {
         const res = parseContentIntoSentences(response);
         setSentences(res);
+        setCurrentSentenceIdx(0);
+        // speechEngine.load(res[currentSentenceIdx]);
       } catch (error) {
         // handle exception
       }
     });
+  }
+  useEffect(() => {
+    handleFetchData();
   }, [])
   return (
     <div className="App">
       <h1>Text to speech</h1>
       <div>
-        <CurrentlyReading sentences={sentences} currentSentenceIdx={currentSentenceIdx} />
+        <CurrentlyReading currentWordRange={currentWordRange} sentences={sentences} currentSentenceIdx={currentSentenceIdx} />
       </div>
       <div>
-        <Controls state={playbackState} play={play} pause={pause} />
+        <Controls state={playbackState} play={play} pause={pause} loadNewContent={handleFetchData}/>
       </div>
     </div>
   );
